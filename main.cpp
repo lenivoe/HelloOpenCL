@@ -13,7 +13,7 @@ int main() {
     const size_t csrs = common_size;
     const size_t cs = common_size;
     CMatx<true> in1_matx(rs, csrs);
-    CMatx<true> in2_matx(in1_matx.Cols(), cs);
+    CMatx<false> in2_matx(in1_matx.Cols(), cs);
     CMatx<true> out_matx(in1_matx.Rows(), in2_matx.Cols());
 
     auto MatxInput = [](auto& matx) {
