@@ -8,7 +8,7 @@
 
 int main() {
     // data
-    const size_t common_size = 500;
+    const size_t common_size = 4000;
     const size_t rs = common_size;
     const size_t csrs = common_size;
     const size_t cs = common_size;
@@ -28,7 +28,7 @@ int main() {
 
 
     try {
-        COpenCLWrapper::Init();
+        COpenCLWrapper::Init(0, CL_DEVICE_TYPE_GPU, 1);
         cl::Kernel kernel = COpenCLWrapper::BuildKernel("..\\HelloOpenCL\\kernel.cl");
         COpenCLWrapper::MatMul(kernel,
                                static_cast<float*>(&in1_matx.At(0, 0)),

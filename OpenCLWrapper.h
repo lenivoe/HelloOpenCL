@@ -93,10 +93,10 @@ inline void COpenCLWrapper::MatMul(cl::Kernel& _kernel,
 
     using namespace std::chrono;
     time_point<high_resolution_clock> start_time = high_resolution_clock::now();
-    const int tests_count = 5;
+    const int tests_count = 1;
     for(int i = 0; i < tests_count; i++){
         // calc output
-        queue.enqueueNDRangeKernel(_kernel, cl::NullRange, cl::NDRange(_rows1 * _cols2)/*, cl::NDRange(1)*/);
+        queue.enqueueNDRangeKernel(_kernel, cl::NullRange, cl::NDRange(_rows1)/*, cl::NDRange(1)*/);
         queue.finish();
     }
     duration<float> seconds = high_resolution_clock::now() - start_time;
