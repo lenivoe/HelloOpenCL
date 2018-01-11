@@ -10,7 +10,6 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include <chrono>
 
 
 class COpenCLWrapper {
@@ -87,20 +86,15 @@ inline void COpenCLWrapper::MatMul(cl::Kernel& _kernel,
     _kernel.setArg(arg_ind++, _rows1);
     _kernel.setArg(arg_ind++, _cols1_rows2);
     _kernel.setArg(arg_ind++, _cols2);
+    _kernel.setArg(arg_ind++, _cols1_rows2 * sizeof(cl_float), NULL); // буфер столбца
 
 
     cl::CommandQueue& queue = m_Inst->m_Queue;
 
-    using namespace std::chrono;
-    time_point<high_resolution_clock> start_time = high_resolution_clock::now();
-    const int tests_count = 1;
-    for(int i = 0; i < tests_count; i++){
-        // calc output
-        queue.enqueueNDRangeKernel(_kernel, cl::NullRange, cl::NDRange(_rows1)/*, cl::NDRange(1)*/);
-        queue.finish();
-    }
-    duration<float> seconds = high_resolution_clock::now() - start_time;
-    std::cout << "time: " << seconds.count() << " sec" << std::endl << std::endl;
+    // calc output
+    queue.enqueueNDRangeKernel(_kernel, cl::NullRange, cl::NDRange(_rows1));
+    queue.finish();
+
     // read output
     queue.enqueueReadBuffer(clmOutputBuf, CL_TRUE, 0, _rows1 * _cols2 * sizeof(float), _output_matx);
 }

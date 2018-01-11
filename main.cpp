@@ -1,46 +1,75 @@
 #define __MAIN_CPP
 #ifdef __MAIN_CPP
 
-#include "OpenCLWrapper.h"
+#define NDEBUG
+#include <assert.h>
+#include <sstream>
+#include <fstream>
+#include <chrono>
 
 #include "Matx.h"
+#include "OpenCLWrapper.h"
 
 
-int main() {
+int StrToInt(std::string str) {
+    int ret_val;
+    std::istringstream(str) >> ret_val;
+    return ret_val;
+}
+
+
+int main(int argc, char* argv[]) {
+    std::cout << "data init" << std::endl;
     // data
-    const size_t common_size = 4000;
-    const size_t rs = common_size;
-    const size_t csrs = common_size;
-    const size_t cs = common_size;
-    CMatx<true> in1_matx(rs, csrs);
-    CMatx<false> in2_matx(in1_matx.Cols(), cs);
+    const size_t common_size = argc > 2 ? StrToInt(argv[2]) : 4000;
+    const size_t r1_size = common_size;
+    const size_t c1_r2_size = common_size;
+    const size_t c2_size = common_size;
+    CMatx<true> in1_matx(r1_size, c1_r2_size);
+    CMatx<false> in2_matx(in1_matx.Cols(), c2_size);
     CMatx<true> out_matx(in1_matx.Rows(), in2_matx.Cols());
 
-    auto MatxInput = [](auto& matx) {
+    auto InputMatx = [](auto& matx) {
         for(size_t row = 0; row < matx.Rows(); row++)
             for(size_t col = 0; col < matx.Cols(); col++)
-                matx.At(row, col) = static_cast<float>(row) / matx.Rows() +
-                                    static_cast<float>(col) / matx.Cols();
+                matx.At(row, col) = static_cast<int>(row - col);
+    };
+    auto InputMatx2 = [&InputMatx](auto& matx) {
+        InputMatx(matx);
+        for(size_t row = 0; row < matx.Rows(); row++)
+            for(size_t col = 0; col < matx.Cols(); col++)
+                matx.At(row, col) /= 2;
     };
 
-    MatxInput(in1_matx);
-    MatxInput(in2_matx);
+    InputMatx(in1_matx);
+    InputMatx2(in2_matx);
 
 
     try {
-        COpenCLWrapper::Init(0, CL_DEVICE_TYPE_GPU, 1);
-        cl::Kernel kernel = COpenCLWrapper::BuildKernel("..\\HelloOpenCL\\kernel.cl");
+        std::cout << "opencl init" << std::endl;
+        const char* kernal_filename = "..\\HelloOpenCL\\kernel.cl";"kernel.cl";
+        const size_t device_ind = argc > 1 ? StrToInt(argv[1]) : 0;
+        COpenCLWrapper::Init(0, CL_DEVICE_TYPE_GPU, device_ind);
+        cl::Kernel kernel = COpenCLWrapper::BuildKernel(kernal_filename);
+
+
+        std::cout << "calculating" << std::endl;
+        auto start_time = std::chrono::high_resolution_clock::now();
+
         COpenCLWrapper::MatMul(kernel,
                                static_cast<float*>(&in1_matx.At(0, 0)),
                                static_cast<float*>(&in2_matx.At(0, 0)),
                                static_cast<float*>(&out_matx.At(0, 0)),
                                in1_matx.Rows(), in1_matx.Cols(), in2_matx.Cols());
+
+        std::chrono::duration<double> seconds(std::chrono::high_resolution_clock::now() - start_time);
+        std::cout << "time: " << seconds.count() << " sec" << std::endl << std::endl;
     } catch(cl::Error error) {
         std::cout << error.what() << " : " << CLErrName(error.err()) << std::endl << std::endl;
         return error.err();
     }
 
-    auto MatxOutput = [](auto& matx) {
+    auto OutputMatx = [](auto& matx) {
         size_t rows = matx.Rows();
         const int max_count = 5;
         if(rows > max_count) rows = max_count;
@@ -55,11 +84,11 @@ int main() {
         std::cout << std::endl;
     };
 
-    MatxOutput(in1_matx);
-    MatxOutput(in2_matx);
-    MatxOutput(out_matx);
+    OutputMatx(in1_matx);
+    OutputMatx(in2_matx);
+    OutputMatx(out_matx);
 
-    std::cout << std::endl << std::endl << "done." << std::endl;
+    std::cout << std::endl << "done" << std::endl;
 }
 
 
