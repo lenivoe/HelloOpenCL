@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
 
     try {
         std::cout << "opencl init" << std::endl;
-        const char* kernal_filename = "..\\HelloOpenCL\\kernel.cl";"kernel.cl";
+        const char* kernal_filename = "kernel.cl";
         const size_t device_ind = argc > 1 ? StrToInt(argv[1]) : 0;
         COpenCLWrapper::Init(0, CL_DEVICE_TYPE_GPU, device_ind);
         cl::Kernel kernel = COpenCLWrapper::BuildKernel(kernal_filename);
