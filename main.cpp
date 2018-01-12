@@ -21,7 +21,7 @@ int StrToInt(std::string str) {
 int main(int argc, char* argv[]) {
     std::cout << "data init" << std::endl;
     // data
-    const size_t common_size = argc > 2 ? StrToInt(argv[2]) : 4000;
+    const size_t common_size = argc > 4 ? StrToInt(argv[4]) : 4000;
     const size_t r1_size = common_size;
     const size_t c1_r2_size = common_size;
     const size_t c2_size = common_size;
@@ -46,10 +46,20 @@ int main(int argc, char* argv[]) {
 
 
     try {
+        const size_t platform_ind = argc > 1 ? StrToInt(argv[1]) : 0;
+        std::string device_type_str = argc > 2 ? argv[2] : "gpu";
+        int device_type = -1;
+        if(device_type_str == "gpu")
+            device_type = CL_DEVICE_TYPE_GPU;
+        else if(device_type_str == "cpu")
+            device_type = CL_DEVICE_TYPE_CPU;
+        else if(device_type_str == "all")
+            device_type = CL_DEVICE_TYPE_ALL;
+        const size_t device_ind = argc > 3 ? StrToInt(argv[3]) : 0;
+
         std::cout << "opencl init" << std::endl;
         const char* kernal_filename = "kernel.cl";
-        const size_t device_ind = argc > 1 ? StrToInt(argv[1]) : 0;
-        COpenCLWrapper::Init(0, CL_DEVICE_TYPE_GPU, device_ind);
+        COpenCLWrapper::Init(platform_ind, device_type, device_ind);
         cl::Kernel kernel = COpenCLWrapper::BuildKernel(kernal_filename);
 
 
