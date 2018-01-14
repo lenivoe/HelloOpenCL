@@ -60,6 +60,7 @@ int main(int argc, char* argv[]) {
         std::cout << "opencl init" << std::endl;
         const char* kernal_filename = "kernel.cl";
         COpenCLWrapper::Init(platform_ind, device_type, device_ind);
+        std::cout << "build kernel" << std::endl;
         cl::Kernel kernel = COpenCLWrapper::BuildKernel(kernal_filename);
 
 
