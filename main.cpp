@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
     const size_t c1_r2_size = common_size;
     const size_t c2_size = common_size;
     CMatx<true> in1_matx(r1_size, c1_r2_size);
-    CMatx<false> in2_matx(in1_matx.Cols(), c2_size);
+    CMatx<true> in2_matx(in1_matx.Cols(), c2_size);
     CMatx<true> out_matx(in1_matx.Rows(), in2_matx.Cols());
 
     auto InputMatx = [](auto& matx) {
@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
         const size_t device_ind = argc > 3 ? StrToInt(argv[3]) : 0;
 
         std::cout << "opencl init" << std::endl;
-        const char* kernal_filename = "kernel.cl";
+        const char* kernal_filename = "..\\HelloOpenCL\\kernel.cl";
         COpenCLWrapper::Init(platform_ind, device_type, device_ind);
         std::cout << "build kernel" << std::endl;
         cl::Kernel kernel = COpenCLWrapper::BuildKernel(kernal_filename);
