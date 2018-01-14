@@ -86,8 +86,7 @@ inline void COpenCLWrapper::MatMul(cl::Kernel& _kernel,
                                          _rows1 * _cols1_rows2 * sizeof(float), const_cast<float*>(_input_matx1));
     cl::Buffer clmInputBuf2 = cl::Buffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
                                          _cols1_rows2 * _cols2 * sizeof(float), const_cast<float*>(_input_matx2));
-    cl::Buffer clmOutputBuf = cl::Buffer(context, CL_MEM_READ_WRITE/*CL_MEM_WRITE_ONLY*/,
-                                         _rows1 * _cols2 * sizeof(float), _output_matx);
+    cl::Buffer clmOutputBuf = cl::Buffer(context, CL_MEM_WRITE_ONLY, _rows1 * _cols2 * sizeof(float));
 
     std::cout << "..set args\n";
 

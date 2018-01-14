@@ -21,7 +21,7 @@ int StrToInt(std::string str) {
 int main(int argc, char* argv[]) {
     std::cout << "data init" << std::endl;
     // data
-    const size_t common_size = argc > 4 ? StrToInt(argv[4]) : 4000;
+    const size_t common_size = argc > 4 ? StrToInt(argv[4]) : 2000;
     const size_t r1_size = common_size;
     const size_t c1_r2_size = common_size;
     const size_t c2_size = common_size;
@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
         const size_t device_ind = argc > 3 ? StrToInt(argv[3]) : 0;
 
         std::cout << "opencl init" << std::endl;
-        const char* kernal_filename = "kernel.cl";
+        const char* kernal_filename = "hard_kernel.cl";
         COpenCLWrapper::Init(platform_ind, device_type, device_ind);
         std::cout << "build kernel" << std::endl;
         cl::Kernel kernel = COpenCLWrapper::BuildKernel(kernal_filename);
