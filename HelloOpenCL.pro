@@ -2,6 +2,7 @@ TEMPLATE = app
 CONFIG += console c++14
 CONFIG -= app_bundle
 CONFIG -= qt
+TARGET = "simple_debug"
 
 INCLUDEPATH += "C:\Program Files (x86)\AMD APP SDK\3.0\include"
 
@@ -14,7 +15,7 @@ SOURCES += \
     OpenCLWrapper.cpp
 
 DISTFILES += \
-    kernel.cl
+    simple_kernel.cl
 
 HEADERS += \
     OpenCLWrapper.h \
