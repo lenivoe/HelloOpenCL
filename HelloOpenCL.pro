@@ -2,7 +2,7 @@ TEMPLATE = app
 CONFIG += console c++14
 CONFIG -= app_bundle
 CONFIG -= qt
-TARGET = "hard_debug"
+TARGET = "MatMul_release"
 
 INCLUDEPATH += "C:\Program Files (x86)\AMD APP SDK\3.0\include"
 
@@ -11,15 +11,13 @@ INCLUDEPATH += 'C:/Program Files (x86)/AMD APP SDK/3.0/lib/x86'
 DEPENDPATH += 'C:/Program Files (x86)/AMD APP SDK/3.0/lib/x86'
 
 SOURCES += \
-    main.cpp \
-    OpenCLWrapper.cpp
+    main.cpp
 
 DISTFILES += \
     hard_kernel_копия.cl \
     mat_mul_kernel.cl
 
 HEADERS += \
-    OpenCLWrapper.h \
     Matx.h \
     OpenCLTask.h \
     OpenCLQueue.h \

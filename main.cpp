@@ -63,13 +63,13 @@ int main(int argc, char* argv[]) {
             device_type = CL_DEVICE_TYPE_CPU;
         else if(device_type_str == "all")
             device_type = CL_DEVICE_TYPE_ALL;
-        const size_t device_ind = argc > 3 ? StrToInt(argv[3]) : 1;
+        const size_t device_ind = argc > 3 ? StrToInt(argv[3]) : 0;
 
         std::cout << "opencl init" << std::endl;
         COpenCLQueue queue(platform_ind, device_type, device_ind);
 
         std::cout << "build kernel" << std::endl;
-        const char* kernal_filename = "..\\HelloOpenCL\\mat_mul_kernel.cl";
+        const char* kernal_filename = "mat_mul_kernel.cl";
         COpenCLTask task;
         const size_t tile_size = COpenCLTask::CalcTileSize(queue, out_matx.Rows(), out_matx.Cols());
         task.Build(queue, CLLoadSource(kernal_filename), "main", tile_size);
