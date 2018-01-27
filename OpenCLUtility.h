@@ -1,12 +1,19 @@
-/*#include "OpenCLWrapper.h"
+#ifndef OPENCLUTILITY_H
+#define OPENCLUTILITY_H
 
-COpenCLWrapper* COpenCLWrapper::m_Inst = nullptr;
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
-COpenCLWrapper::~COpenCLWrapper() { delete m_Inst; }
+#define CL_HPP_MINIMUM_OPENCL_VERSION 100
+#define CL_HPP_TARGET_OPENCL_VERSION 100
+#define CL_HPP_ENABLE_EXCEPTIONS
+#include <CL/cl2.hpp> // вызывает ошибки линковки, использовать только в inline функциях
 
+namespace OpenCL {
+namespace Utility {
 
-
-const char* CLErrName(int err) {
+inline const char* CLErrName(int err) {
 #define CASE(x) case x: return #x
     switch(err) {
     CASE(CL_DEVICE_NOT_FOUND);
@@ -76,7 +83,7 @@ const char* CLErrName(int err) {
     return nullptr;
 }
 
-const char*CLDeviceType(int type) {
+inline const char* CLDeviceType(int type) {
 #define CASE(x) case x: return #x
     switch(type) {
     CASE(CL_DEVICE_TYPE_CPU);
@@ -87,4 +94,14 @@ const char*CLDeviceType(int type) {
 #undef CASE
     return nullptr;
 }
-*/
+
+inline std::string CLLoadSource(const std::string& _file_name) {
+    std::ifstream source_file(_file_name);
+    return std::string(std::istreambuf_iterator<char>(source_file),
+                       (std::istreambuf_iterator<char>()));
+}
+
+}
+}
+
+#endif // OPENCLUTILITY_H

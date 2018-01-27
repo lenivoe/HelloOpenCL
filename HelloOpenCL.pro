@@ -15,8 +15,12 @@ SOURCES += \
     OpenCLWrapper.cpp
 
 DISTFILES += \
-    hard_kernel.cl
+    hard_kernel_копия.cl \
+    mat_mul_kernel.cl
 
 HEADERS += \
     OpenCLWrapper.h \
-    Matx.h
+    Matx.h \
+    OpenCLTask.h \
+    OpenCLQueue.h \
+    OpenCLUtility.h
