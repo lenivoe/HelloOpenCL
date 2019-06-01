@@ -19,13 +19,20 @@ int StrToInt(std::string str) {
     return ret_val;
 }
 
-
+/*
+ * product of two matrices with sizes 2NxN and Nx3N
+ * cmd params:
+ *     param 1 - platform index
+ *     param 2 - type of device (gpu, cpu of all)
+ *     param 3 - device index
+ *     param 4 - matrices size
+ */
 int main(int argc, char* argv[]) {
     // data
-    const size_t common_size = argc > 4 ? StrToInt(argv[4]) : 16 * (128 * 3 / 2);
-    const size_t r1_size = common_size * 2;
-    const size_t c1_r2_size = common_size;
-    const size_t c2_size = common_size * 3;
+    const size_t common_size = argc > 4 ? StrToInt(argv[4]) : 16 * (128 * 3 / 2); // matrices size
+    const size_t r1_size = common_size * 2; // first matrix rows count
+    const size_t c1_r2_size = common_size; // first matrix columns count and second matrix rows count
+    const size_t c2_size = common_size * 3; // second matrix columns count
 
     std::cout << "data init. in1: " << r1_size << " x " << c1_r2_size <<
                           ", in2: " << c1_r2_size << " x " << c2_size << std::endl;
@@ -33,14 +40,12 @@ int main(int argc, char* argv[]) {
     CMatx<false> in2_matx(in1_matx.Cols(), c2_size);
     CMatx<false> out_matx(in1_matx.Rows(), in2_matx.Cols());
 
-    auto InputMatx = [](auto& matx) {
-        //int i = 0;
+    auto InputMatx = [](auto& matx) { // some init of matx 1
         for(size_t row = 0; row < matx.Rows(); row++)
             for(size_t col = 0; col < matx.Cols(); col++)
                 matx.At(row, col) = abs(row - col) % 7 - 3;
     };
-    auto InputMatx2 = [](auto& matx) {
-        //int i = -5;
+    auto InputMatx2 = [](auto& matx) { // some init of matx 2
         for(size_t row = 0; row < matx.Rows(); row++)
             for(size_t col = 0; col < matx.Cols(); col++)
                 matx.At(row, col) = abs(row - col) % 3;
@@ -53,7 +58,8 @@ int main(int argc, char* argv[]) {
         using OpenCL::COpenCLQueue;
         using OpenCL::COpenCLTask;
         using OpenCL::Utility::CLLoadSource;
-
+        
+        // choice of device
         const size_t platform_ind = argc > 1 ? StrToInt(argv[1]) : 0;
         std::string device_type_str = argc > 2 ? argv[2] : "gpu";
         int device_type = -1;
@@ -71,12 +77,14 @@ int main(int argc, char* argv[]) {
         std::cout << "build kernel" << std::endl;
         const char* kernal_filename = "mat_mul_kernel.cl";
         COpenCLTask task;
+        // calculation of optimal tile size for task
         const size_t tile_size = COpenCLTask::CalcTileSize(queue, out_matx.Rows(), out_matx.Cols());
-        task.Build(queue, CLLoadSource(kernal_filename), "main", tile_size);
+        task.Build(queue, CLLoadSource(kernal_filename), "main", tile_size); // building task
 
         std::cout << "calculating, local group size: " << tile_size << " x " << tile_size << std::endl;
         auto start_time = std::chrono::high_resolution_clock::now();
-
+        
+        // calculation of matrices product
         task.MatMul(queue,
                     &in1_matx.At(0, 0), &in2_matx.At(0, 0), &out_matx.At(0, 0),
                     in1_matx.Rows(), in1_matx.Cols(), in2_matx.Cols());
